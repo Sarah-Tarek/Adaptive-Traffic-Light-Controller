@@ -120,7 +120,7 @@ Integrates all submodules to form the complete system.
 ### **Clone the Repository**
 
 ```bash
-git clone https://github.com/Sarah-Tarek/Adaptive-Traffic-Lights.git
+git clone https://github.com/Sarah-Tarek/Adaptive-Traffic-Light-Controller.git
 cd Adaptive-Traffic-Lights
 ```
 
