@@ -121,7 +121,7 @@ Integrates all submodules to form the complete system.
 
 ```bash
 git clone https://github.com/Sarah-Tarek/Adaptive-Traffic-Light-Controller.git
-cd Adaptive-Traffic-Lights
+cd Adaptive-Traffic-Light-Controller
 ```
 
 ### **Simulate the Design**
