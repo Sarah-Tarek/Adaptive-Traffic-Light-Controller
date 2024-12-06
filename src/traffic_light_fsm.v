@@ -1,66 +1,100 @@
 module traffic_light_fsm (
     input wire clk,                 // System clock
     input wire rst,                 // Reset signal
-    input wire [1:0] S1,            // Start of lane sensors
-    input wire [1:0] S5,            // Congestion sensors
-    output reg [3:0] state,         // FSM state
-    output reg [3:0] next_state,    // Next FSM state
-    output reg [3:0] light_signal   // Traffic light control signal
+    input wire [1:0] S1,            // Start of lane sensors (2 bits for simplicity)
+    input wire [1:0] S5,            // Congestion sensors (2 bits for simplicity)
+    output reg [3:0] light_signal   // FSM output for traffic light control
 );
 
     // State encoding
-    localparam NS1_RED    = 4'b0000,
-               NS1_GREEN  = 4'b0001,
-               NS1_YELLOW = 4'b0010,
-               NS2_RED    = 4'b0011,
-               NS2_GREEN  = 4'b0100,
-               NS2_YELLOW = 4'b0101,
-               EW1_RED    = 4'b0110,
-               EW1_GREEN  = 4'b0111,
-               EW1_YELLOW = 4'b1000,
-               EW2_RED    = 4'b1001,
-               EW2_GREEN  = 4'b1010,
-               EW2_YELLOW = 4'b1011;
+    localparam NS1_GREEN  = 4'b0001,  // North-South Lane 1: GREEN
+               NS1_YELLOW = 4'b0010,  // North-South Lane 1: YELLOW
+               NS2_GREEN  = 4'b0011,  // North-South Lane 2: GREEN
+               NS2_YELLOW = 4'b0100,  // North-South Lane 2: YELLOW
+               EW1_GREEN  = 4'b0101,  // East-West Lane 1: GREEN
+               EW1_YELLOW = 4'b0110,  // East-West Lane 1: YELLOW
+               EW2_GREEN  = 4'b0111,  // East-West Lane 2: GREEN
+               EW2_YELLOW = 4'b1000;  // East-West Lane 2: YELLOW
 
-    // State transition logic
+    // Internal state and next state signals
+    reg [3:0] state, next_state;
+
+    // State transition logic (sequential)
     always @(posedge clk or posedge rst) begin
         if (rst) begin
-            state <= NS1_RED;
+            state <= NS1_GREEN;  // Default state on reset
         end else begin
             state <= next_state;
         end
     end
 
-    // Next state logic
+    // Next state logic (combinational)
     always @(*) begin
         case (state)
-            NS1_RED:    next_state = (S1[0] == 1'b1) ? NS1_GREEN : NS2_RED;
-            NS1_GREEN:  next_state = (S5[0] == 1'b1) ? NS1_GREEN : NS1_YELLOW;
-            NS1_YELLOW: next_state = NS2_RED;
+            // North-South Lane 1
+            NS1_GREEN: begin
+                if (S5[0] == 1'b1)  // Extend GREEN if congestion detected
+                    next_state = NS1_GREEN;
+                else
+                    next_state = NS1_YELLOW;
+            end
+            NS1_YELLOW: begin
+                next_state = NS2_GREEN;  // Transition to NS2 GREEN
+            end
 
-            NS2_RED:    next_state = (S1[1] == 1'b1) ? NS2_GREEN : EW1_RED;
-            NS2_GREEN:  next_state = (S5[1] == 1'b1) ? NS2_GREEN : NS2_YELLOW;
-            NS2_YELLOW: next_state = EW1_RED;
+            // North-South Lane 2
+            NS2_GREEN: begin
+                if (S5[1] == 1'b1)  // Extend GREEN if congestion detected
+                    next_state = NS2_GREEN;
+                else
+                    next_state = NS2_YELLOW;
+            end
+            NS2_YELLOW: begin
+                next_state = EW1_GREEN;  // Transition to EW1 GREEN
+            end
 
-            EW1_RED:    next_state = (S1[0] == 1'b1) ? EW1_GREEN : EW2_RED;
-            EW1_GREEN:  next_state = (S5[0] == 1'b1) ? EW1_GREEN : EW1_YELLOW;
-            EW1_YELLOW: next_state = EW2_RED;
+            // East-West Lane 1
+            EW1_GREEN: begin
+                if (S5[0] == 1'b1)  // Extend GREEN if congestion detected
+                    next_state = EW1_GREEN;
+                else
+                    next_state = EW1_YELLOW;
+            end
+            EW1_YELLOW: begin
+                next_state = EW2_GREEN;  // Transition to EW2 GREEN
+            end
 
-            EW2_RED:    next_state = (S1[1] == 1'b1) ? EW2_GREEN : NS1_RED;
-            EW2_GREEN:  next_state = (S5[1] == 1'b1) ? EW2_GREEN : EW2_YELLOW;
-            EW2_YELLOW: next_state = NS1_RED;
+            // East-West Lane 2
+            EW2_GREEN: begin
+                if (S5[1] == 1'b1)  // Extend GREEN if congestion detected
+                    next_state = EW2_GREEN;
+                else
+                    next_state = EW2_YELLOW;
+            end
+            EW2_YELLOW: begin
+                next_state = NS1_GREEN;  // Loop back to NS1 GREEN
+            end
 
-            default:    next_state = NS1_RED;
+            // Default case (should never occur)
+            default: begin
+                next_state = NS1_GREEN;
+            end
         endcase
     end
 
-    // Traffic light output logic
+    // Output logic (based on current state)
     always @(*) begin
         case (state)
-            NS1_RED, NS2_RED, EW1_RED, EW2_RED: light_signal = 4'b0001;  // RED
-            NS1_GREEN, NS2_GREEN, EW1_GREEN, EW2_GREEN: light_signal = 4'b0010; // GREEN
-            NS1_YELLOW, NS2_YELLOW, EW1_YELLOW, EW2_YELLOW: light_signal = 4'b0100; // YELLOW
-            default: light_signal = 4'b0001; // Default to RED
+            NS1_GREEN:  light_signal = NS1_GREEN;
+            NS1_YELLOW: light_signal = NS1_YELLOW;
+            NS2_GREEN:  light_signal = NS2_GREEN;
+            NS2_YELLOW: light_signal = NS2_YELLOW;
+            EW1_GREEN:  light_signal = EW1_GREEN;
+            EW1_YELLOW: light_signal = EW1_YELLOW;
+            EW2_GREEN:  light_signal = EW2_GREEN;
+            EW2_YELLOW: light_signal = EW2_YELLOW;
+            default:    light_signal = NS1_GREEN;  // Default to NS1_GREEN
         endcase
     end
+
 endmodule
