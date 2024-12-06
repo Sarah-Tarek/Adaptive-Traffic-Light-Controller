@@ -11,7 +11,6 @@ An adaptive traffic light controller designed to dynamically manage traffic flow
    - [Scenario Setup](#scenario-setup)  
    - [Step-by-Step Trace](#step-by-step-trace)  
    - [Summary of Key Signals](#summary-of-key-signals)  
-   - [How Each Module Works Together](#how-each-module-works-together)  
 3. [Sensor Input Handler Explained](#sensor-input-handler-explained)  
    - [Module Components](#module-components)  
    - [How It Works](#how-it-works)  
