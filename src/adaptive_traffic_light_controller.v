@@ -1,8 +1,14 @@
 module adaptive_traffic_light_controller (
     input wire clk,                      // System clock
     input wire rst,                      // Reset signal
-    input wire [3:0] raw_s1,             // Raw S1 sensors for each lane
-    input wire [3:0] raw_s5,             // Raw S5 congestion sensors
+    input wire raw_S1_NS1,               // Raw S1 sensor for North-South Lane 1
+    input wire raw_S1_NS2,               // Raw S1 sensor for North-South Lane 2
+    input wire raw_S1_EW1,               // Raw S1 sensor for East-West Lane 1
+    input wire raw_S1_EW2,               // Raw S1 sensor for East-West Lane 2
+    input wire raw_S5_NS1,               // Raw S5 congestion sensor for North-South Lane 1
+    input wire raw_S5_NS2,               // Raw S5 congestion sensor for North-South Lane 2
+    input wire raw_S5_EW1,               // Raw S5 congestion sensor for East-West Lane 1
+    input wire raw_S5_EW2,               // Raw S5 congestion sensor for East-West Lane 2
     output wire [3:0] NS1_light,         // Traffic light signals for North-South Lane 1
     output wire [3:0] NS2_light,         // Traffic light signals for North-South Lane 2
     output wire [3:0] EW1_light,         // Traffic light signals for East-West Lane 1
@@ -10,8 +16,8 @@ module adaptive_traffic_light_controller (
 );
 
     // Internal signals
-    wire [3:0] debounced_s1;             // Debounced S1 signals
-    wire [3:0] debounced_s5;             // Debounced S5 signals
+    wire debounced_S1_NS1, debounced_S1_NS2, debounced_S1_EW1, debounced_S1_EW2;
+    wire debounced_S5_NS1, debounced_S5_NS2, debounced_S5_EW1, debounced_S5_EW2;
     wire [3:0] light_signal;             // FSM output for traffic light control
     wire timer_expired;                  // Timer expired signal
     wire yellow_mode;                    // Timer mode for yellow light
@@ -19,34 +25,75 @@ module adaptive_traffic_light_controller (
     wire extend_timer;                   // Timer extend signal
 
     // Instantiate sensor input handlers for debouncing
-    genvar i;
-    generate
-        for (i = 0; i < 4; i = i + 1) begin : sensor_debounce
-            // For S1 Sensors
-            sensor_input_handler s1_handler (
-                .clk(clk),
-                .rst(rst),
-                .raw_sensor(raw_s1[i]),
-                .debounced_sensor(debounced_s1[i])
-            );
-            
-            // For S5 Sensors
-            sensor_input_handler s5_handler (
-                .clk(clk),
-                .rst(rst),
-                .raw_sensor(raw_s5[i]),
-                .debounced_sensor(debounced_s5[i])
-            );
-        end
-    endgenerate
+    sensor_input_handler s1_ns1_handler (
+        .clk(clk),
+        .rst(rst),
+        .raw_sensor(raw_S1_NS1),
+        .debounced_sensor(debounced_S1_NS1)
+    );
+
+    sensor_input_handler s1_ns2_handler (
+        .clk(clk),
+        .rst(rst),
+        .raw_sensor(raw_S1_NS2),
+        .debounced_sensor(debounced_S1_NS2)
+    );
+
+    sensor_input_handler s1_ew1_handler (
+        .clk(clk),
+        .rst(rst),
+        .raw_sensor(raw_S1_EW1),
+        .debounced_sensor(debounced_S1_EW1)
+    );
+
+    sensor_input_handler s1_ew2_handler (
+        .clk(clk),
+        .rst(rst),
+        .raw_sensor(raw_S1_EW2),
+        .debounced_sensor(debounced_S1_EW2)
+    );
+
+    sensor_input_handler s5_ns1_handler (
+        .clk(clk),
+        .rst(rst),
+        .raw_sensor(raw_S5_NS1),
+        .debounced_sensor(debounced_S5_NS1)
+    );
+
+    sensor_input_handler s5_ns2_handler (
+        .clk(clk),
+        .rst(rst),
+        .raw_sensor(raw_S5_NS2),
+        .debounced_sensor(debounced_S5_NS2)
+    );
+
+    sensor_input_handler s5_ew1_handler (
+        .clk(clk),
+        .rst(rst),
+        .raw_sensor(raw_S5_EW1),
+        .debounced_sensor(debounced_S5_EW1)
+    );
+
+    sensor_input_handler s5_ew2_handler (
+        .clk(clk),
+        .rst(rst),
+        .raw_sensor(raw_S5_EW2),
+        .debounced_sensor(debounced_S5_EW2)
+    );
 
     // Instantiate the FSM
     traffic_light_fsm fsm (
         .clk(clk),
         .rst(rst),
-        .S1(debounced_s1),               // Use all debounced S1 sensors
-        .S5(debounced_s5),               // Use all debounced S5 sensors
-        .light_signal(light_signal)      // Output: current FSM state
+        .S1_NS1(debounced_S1_NS1),
+        .S1_NS2(debounced_S1_NS2),
+        .S1_EW1(debounced_S1_EW1),
+        .S1_EW2(debounced_S1_EW2),
+        .S5_NS1(debounced_S5_NS1),
+        .S5_NS2(debounced_S5_NS2),
+        .S5_EW1(debounced_S5_EW1),
+        .S5_EW2(debounced_S5_EW2),
+        .state(light_signal)
     );
 
     // Instantiate the timer
@@ -71,15 +118,15 @@ module adaptive_traffic_light_controller (
     );
 
     // Timer control logic
-    assign yellow_mode = (light_signal == 4'b0010) ||  // NS1_YELLOW
-                         (light_signal == 4'b0100) ||  // NS2_YELLOW
-                         (light_signal == 4'b0110) ||  // EW1_YELLOW
-                         (light_signal == 4'b1000);    // EW2_YELLOW
+    assign yellow_mode = (light_signal == 4'b0011) ||  // NS1_YELLOW
+                         (light_signal == 4'b0111) ||  // NS2_YELLOW
+                         (light_signal == 4'b1100) ||  // EW1_YELLOW
+                         (light_signal == 4'b1110);    // EW2_YELLOW
 
     assign start_timer = (light_signal != 4'b0000);    // Start timer for any non-RED state
-    assign extend_timer = (light_signal == 4'b0001 && debounced_s5[0]) ||  // Extend for NS1_GREEN
-                          (light_signal == 4'b0011 && debounced_s5[1]) ||  // Extend for NS2_GREEN
-                          (light_signal == 4'b0101 && debounced_s5[2]) ||  // Extend for EW1_GREEN
-                          (light_signal == 4'b0111 && debounced_s5[3]);    // Extend for EW2_GREEN
+    assign extend_timer = (light_signal == 4'b0001 && debounced_S5_NS1) ||  // Extend for NS1_GREEN
+                          (light_signal == 4'b0110 && debounced_S5_NS2) ||  // Extend for NS2_GREEN
+                          (light_signal == 4'b1000 && debounced_S5_EW1) ||  // Extend for EW1_GREEN
+                          (light_signal == 4'b1111 && debounced_S5_EW2);    // Extend for EW2_GREEN
 
 endmodule
