@@ -69,8 +69,9 @@ module traffic_light_fsm (
                 if (S5_NS1 == 1'b1 && congestion_handled_NS1 == 1'b0) begin
                     next_state = NS1_GREEN; // Extend green light
                     congestion_handled_NS1 = 1'b1; // Set congestion flag
-                end else
+                end else begin
                     next_state = NS1_YELLOW; // Transition to yellow
+                end
             end
             NS1_YELLOW: next_state = NS2_RED;
 
@@ -80,8 +81,9 @@ module traffic_light_fsm (
                 if (S5_NS2 == 1'b1 && congestion_handled_NS2 == 1'b0) begin
                     next_state = NS2_GREEN; // Extend green light
                     congestion_handled_NS2 = 1'b1; // Set congestion flag
-                end else
+                end else begin
                     next_state = NS2_YELLOW; // Transition to yellow
+                end
             end
             NS2_YELLOW: next_state = EW1_RED;
 
@@ -91,8 +93,9 @@ module traffic_light_fsm (
                 if (S5_EW1 == 1'b1 && congestion_handled_EW1 == 1'b0) begin
                     next_state = EW1_GREEN; // Extend green light
                     congestion_handled_EW1 = 1'b1; // Set congestion flag
-                end else
+                end else begin
                     next_state = EW1_YELLOW; // Transition to yellow
+                end
             end
             EW1_YELLOW: next_state = EW2_RED;
 
@@ -102,8 +105,9 @@ module traffic_light_fsm (
                 if (S5_EW2 == 1'b1 && congestion_handled_EW2 == 1'b0) begin
                     next_state = EW2_GREEN; // Extend green light
                     congestion_handled_EW2 = 1'b1; // Set congestion flag
-                end else
+                end else begin
                     next_state = EW2_YELLOW; // Transition to yellow
+                end
             end
             EW2_YELLOW: next_state = NS1_RED;
 
