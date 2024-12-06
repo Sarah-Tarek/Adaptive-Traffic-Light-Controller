@@ -1,8 +1,8 @@
 module traffic_light_fsm (
     input wire clk,                 // System clock
     input wire rst,                 // Reset signal
-    input wire [1:0] S1,            // Start of lane sensors (2 bits for simplicity)
-    input wire [1:0] S5,            // Congestion sensors (2 bits for simplicity)
+    input wire [1:0] S1,            // Start of lane sensors
+    input wire [1:0] S5,            // Congestion sensors
     output reg [3:0] light_signal   // FSM output for traffic light control
 );
 
