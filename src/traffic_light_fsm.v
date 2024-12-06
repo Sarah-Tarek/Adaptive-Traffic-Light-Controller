@@ -64,49 +64,50 @@ module traffic_light_fsm (
     always @(*) begin
         case (state)
             // North-South Lane 1
+            NS1_RED:    next_state = (S1_NS1 == 1'b1) ? NS1_GREEN : NS2_RED;
             NS1_GREEN: begin
                 if (S5_NS1 == 1'b1 && congestion_handled_NS1 == 1'b0) begin
-                    next_state = NS1_GREEN;  // Extend green light
-                    congestion_handled_NS1 = 1'b1;  // Mark congestion as handled
-                end else begin
-                    next_state = NS1_YELLOW;  // Transition to yellow
-                end
+                    next_state = NS1_GREEN; // Extend green light
+                    congestion_handled_NS1 = 1'b1; // Set congestion flag
+                end else
+                    next_state = NS1_YELLOW; // Transition to yellow
             end
+            NS1_YELLOW: next_state = NS2_RED;
 
             // North-South Lane 2
+            NS2_RED:    next_state = (S1_NS2 == 1'b1) ? NS2_GREEN : EW1_RED;
             NS2_GREEN: begin
                 if (S5_NS2 == 1'b1 && congestion_handled_NS2 == 1'b0) begin
-                    next_state = NS2_GREEN;  // Extend green light
-                    congestion_handled_NS2 = 1'b1;  // Mark congestion as handled
-                end else begin
-                    next_state = NS2_YELLOW;  // Transition to yellow
-                end
+                    next_state = NS2_GREEN; // Extend green light
+                    congestion_handled_NS2 = 1'b1; // Set congestion flag
+                end else
+                    next_state = NS2_YELLOW; // Transition to yellow
             end
+            NS2_YELLOW: next_state = EW1_RED;
 
             // East-West Lane 1
+            EW1_RED:    next_state = (S1_EW1 == 1'b1) ? EW1_GREEN : EW2_RED;
             EW1_GREEN: begin
                 if (S5_EW1 == 1'b1 && congestion_handled_EW1 == 1'b0) begin
-                    next_state = EW1_GREEN;  // Extend green light
-                    congestion_handled_EW1 = 1'b1;  // Mark congestion as handled
-                end else begin
-                    next_state = EW1_YELLOW;  // Transition to yellow
-                end
+                    next_state = EW1_GREEN; // Extend green light
+                    congestion_handled_EW1 = 1'b1; // Set congestion flag
+                end else
+                    next_state = EW1_YELLOW; // Transition to yellow
             end
+            EW1_YELLOW: next_state = EW2_RED;
 
             // East-West Lane 2
+            EW2_RED:    next_state = (S1_EW2 == 1'b1) ? EW2_GREEN : NS1_RED;
             EW2_GREEN: begin
                 if (S5_EW2 == 1'b1 && congestion_handled_EW2 == 1'b0) begin
-                    next_state = EW2_GREEN;  // Extend green light
-                    congestion_handled_EW2 = 1'b1;  // Mark congestion as handled
-                end else begin
-                    next_state = EW2_YELLOW;  // Transition to yellow
-                end
+                    next_state = EW2_GREEN; // Extend green light
+                    congestion_handled_EW2 = 1'b1; // Set congestion flag
+                end else
+                    next_state = EW2_YELLOW; // Transition to yellow
             end
+            EW2_YELLOW: next_state = NS1_RED;
 
-            // Default cases
-            default: begin
-                next_state = NS1_RED;  // Safe default state
-            end
+            default:    next_state = NS1_RED; // Safe default state
         endcase
     end
 
