@@ -33,18 +33,25 @@ module traffic_light_fsm (
         case (state)
             // North-South Lane 1
             NS1_GREEN: begin
-                if (S5[0] == 1'b1)  // Extend GREEN if congestion detected
+                if (S1[0] == 1'b0)  // No cars at NS1, skip to NS2
+                    next_state = NS2_GREEN;
+                else if (S5[0] == 1'b1)  // Extend GREEN if congestion detected
                     next_state = NS1_GREEN;
                 else
                     next_state = NS1_YELLOW;
             end
             NS1_YELLOW: begin
-                next_state = NS2_GREEN;  // Transition to NS2 GREEN
+                if (S1[1] == 1'b0)  // No cars at NS2, skip to EW1
+                    next_state = EW1_GREEN;
+                else
+                    next_state = NS2_GREEN;  // Transition to NS2 GREEN
             end
 
             // North-South Lane 2
             NS2_GREEN: begin
-                if (S5[1] == 1'b1)  // Extend GREEN if congestion detected
+                if (S1[1] == 1'b0)  // No cars at NS2, skip to EW1
+                    next_state = EW1_GREEN;
+                else if (S5[1] == 1'b1)  // Extend GREEN if congestion detected
                     next_state = NS2_GREEN;
                 else
                     next_state = NS2_YELLOW;
@@ -55,7 +62,9 @@ module traffic_light_fsm (
 
             // East-West Lane 1
             EW1_GREEN: begin
-                if (S5[0] == 1'b1)  // Extend GREEN if congestion detected
+                if (S1[0] == 1'b0)  // No cars at EW1, skip to EW2
+                    next_state = EW2_GREEN;
+                else if (S5[0] == 1'b1)  // Extend GREEN if congestion detected
                     next_state = EW1_GREEN;
                 else
                     next_state = EW1_YELLOW;
@@ -66,7 +75,9 @@ module traffic_light_fsm (
 
             // East-West Lane 2
             EW2_GREEN: begin
-                if (S5[1] == 1'b1)  // Extend GREEN if congestion detected
+                if (S1[1] == 1'b0)  // No cars at EW2, skip to NS1
+                    next_state = NS1_GREEN;
+                else if (S5[1] == 1'b1)  // Extend GREEN if congestion detected
                     next_state = EW2_GREEN;
                 else
                     next_state = EW2_YELLOW;
