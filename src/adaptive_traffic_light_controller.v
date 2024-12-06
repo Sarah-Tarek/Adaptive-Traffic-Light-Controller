@@ -42,8 +42,8 @@ module adaptive_traffic_light_controller (
     traffic_light_fsm fsm (
         .clk(clk),
         .rst(rst),
-        .S1(debounced_s1[1:0]),          // Use two bits for S1 sensors
-        .S5(debounced_s5[1:0]),          // Use two bits for S5 congestion sensors
+        .S1(debounced_s1),               // Use all debounced S1 sensors
+        .S5(debounced_s5),               // Use all debounced S5 sensors
         .light_signal(light_signal)      // Output: current FSM state
     );
 
@@ -77,7 +77,7 @@ module adaptive_traffic_light_controller (
     assign start_timer = (light_signal != 4'b0000);    // Start timer for any non-RED state
     assign extend_timer = (light_signal == 4'b0001 && debounced_s5[0]) ||  // Extend for NS1_GREEN
                           (light_signal == 4'b0011 && debounced_s5[1]) ||  // Extend for NS2_GREEN
-                          (light_signal == 4'b0101 && debounced_s5[0]) ||  // Extend for EW1_GREEN
-                          (light_signal == 4'b0111 && debounced_s5[1]);    // Extend for EW2_GREEN
+                          (light_signal == 4'b0101 && debounced_s5[2]) ||  // Extend for EW1_GREEN
+                          (light_signal == 4'b0111 && debounced_s5[3]);    // Extend for EW2_GREEN
 
 endmodule
