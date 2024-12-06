@@ -269,17 +269,17 @@ For simplicity, we will trace one sensor (`raw_sensor[0]`).
 
 | Clock Cycle | `raw_sensor[7:0]`       | `sync[7:0][1:0]`        | `counter[7:0]`                 | `debounced_sensor[7:0]` | **Notes**                                     |
 |-------------|-------------------------|--------------------------|---------------------------------|-------------------------|-----------------------------------------------|
-| 0           | `00000000`             | `00 00 00 00 00 00 00 00`| `0 0 0 0 0 0 0 0`               | `00000000`             | Reset state.                                  |
-| 1           | `10011001`             | `01 01 00 01 00 00 01 10`| `0 0 0 0 0 0 0 0`               | `00000000`             | Sensors 0, 3, 7 change; counters reset.      |
-| 2           | `10011001`             | `11 11 00 11 00 00 11 11`| `1 1 0 1 0 0 1 1`               | `00000000`             | Sensors 0, 3, 7 stabilizing; counters increment. |
-| 3           | `10011001`             | `11 11 00 11 00 00 11 11`| `2 2 0 2 0 0 2 2`               | `00000000`             | Counters continue to increment.              |
-| 4           | `10011001`             | `11 11 00 11 00 00 11 11`| `3 3 0 3 0 0 3 3`               | `00000000`             | Sensors 0, 3, 7 nearing debounce threshold.  |
-| 5           | `10011001`             | `11 11 00 11 00 00 11 11`| `4 4 0 4 0 0 4 4`               | `10001001`             | Counters for sensors 0, 3, 7 reach `DEBOUNCE_TIME`; outputs update. |
-| 6           | `10001001`             | `11 10 00 11 00 00 11 11`| `4 0 0 4 0 0 4 4`               | `10001001`             | Sensor 1 changes; counter resets.            |
-| 7           | `10001001`             | `11 11 00 11 00 00 11 11`| `4 1 0 4 0 0 4 4`               | `10001001`             | Sensor 1 stabilizing; counter increments.    |
-| 8           | `10001101`             | `11 11 11 11 00 00 11 11`| `4 2 1 4 0 0 4 4`               | `10001001`             | Sensors 2 and 4 stabilizing.                 |
-| 9           | `10001101`             | `11 11 11 11 00 00 11 11`| `4 3 2 4 0 0 4 4`               | `10001001`             | Counters for sensors 2 and 4 nearing threshold. |
-| 10          | `10001101`             | `11 11 11 11 00 00 11 11`| `4 4 3 4 0 0 4 4`               | `11101101`             | Sensors 1, 2, 4 counters reach threshold; outputs update. |
+| 0           | `00000000`             | `00 00 00 00 00 00 00 00`| `0 0 0 0 0 0 0 0`               | `00000000`             | Initial reset state.                          |
+| 1           | `10011001`             | `01 01 00 01 01 00 01 10`| `0 0 0 0 0 0 0 0`               | `00000000`             | Sensors **0, 3, 4, 7** change; counters reset. |
+| 2           | `10011001`             | `11 11 00 11 11 00 11 11`| `1 1 0 1 1 0 1 1`               | `00000000`             | Sensors **0, 3, 4, 7** stabilizing; counters increment. |
+| 3           | `10011001`             | `11 11 00 11 11 00 11 11`| `2 2 0 2 2 0 2 2`               | `00000000`             | Counters continue to increment.              |
+| 4           | `10011001`             | `11 11 00 11 11 00 11 11`| `3 3 0 3 3 0 3 3`               | `00000000`             | Sensors **0, 3, 4, 7** nearing debounce threshold. |
+| 5           | `10011001`             | `11 11 00 11 11 00 11 11`| `4 4 0 4 4 0 4 4`               | `10011001`             | Counters for **0, 3, 4, 7** reach `DEBOUNCE_TIME`; outputs update. |
+| 6           | `10001001`             | `11 10 00 11 10 00 11 11`| `4 0 0 4 0 0 4 4`               | `10011001`             | Sensor **4** changes; counter resets.         |
+| 7           | `10001001`             | `11 11 00 11 11 00 11 11`| `4 1 0 4 1 0 4 4`               | `10011001`             | Sensor **4** stabilizing; counter increments. |
+| 8           | `10001101`             | `11 11 11 11 11 00 11 11`| `4 2 1 4 2 0 4 4`               | `10011001`             | Sensor **2** stabilizing.                     |
+| 9           | `10001101`             | `11 11 11 11 11 00 11 11`| `4 3 2 4 3 0 4 4`               | `10011001`             | Counters for **2, 4** nearing threshold.      |
+| 10          | `10001101`             | `11 11 11 11 11 00 11 11`| `4 4 3 4 4 0 4 4`               | `11101101`             | Sensors **2, 4** counters reach threshold; outputs update. |
 
 ---
 
@@ -287,17 +287,27 @@ For simplicity, we will trace one sensor (`raw_sensor[0]`).
 
 #### **Clock 0:**
 - All `raw_sensor` inputs are `0`.
-- All counters and synchronizers are reset.
+- All counters and synchronizers are reset (`sync = 00`, `counter = 0`).
 
-#### **Clock 1–5:**
-- `raw_sensor[0]`, `raw_sensor[3]`, and `raw_sensor[7]` stabilize at `1`.
-- Counters for these sensors increment each clock cycle until reaching `DEBOUNCE_TIME`.
-- At `clock 5`, their `debounced_sensor` outputs update to `1`.
+#### **Clock 1:**
+- `raw_sensor` changes to `10011001`.
+- Sensors **0, 3, 4, 7** toggle to `1`.
+- Synchronizers (`sync`) update for these sensors (`sync[0] = 01`, etc.).
+- Counters reset for the changing sensors.
 
-#### **Clock 6–10:**
-- `raw_sensor[1]` stabilizes next, followed by `raw_sensor[2]` and `raw_sensor[4]`.
-- Each sensor’s counter increments until reaching `DEBOUNCE_TIME`.
-- At `clock 10`, their `debounced_sensor` outputs update to `1`.
+#### **Clock 2–5:**
+- `raw_sensor` stabilizes at `10011001`.
+- Counters for **0, 3, 4, 7** increment with each clock cycle.
+- At `clock 5`, these counters reach `DEBOUNCE_TIME`, and the corresponding `debounced_sensor` outputs update to reflect the stabilized values.
+
+#### **Clock 6:**
+- `raw_sensor` changes to `10001001` (sensor **4** toggles back to `0`).
+- Counter for **4** resets to `0`.
+
+#### **Clock 7–10:**
+- Sensor **4** stabilizes at `0`, and sensor **2** stabilizes at `1`.
+- Counters for **4** and **2** increment until reaching `DEBOUNCE_TIME`.
+- At `clock 10`, `debounced_sensor` updates to reflect the changes in sensors **2** and **4**.
 
 ---
 
