@@ -37,6 +37,7 @@ Let’s walk through the **`adaptive_traffic_light_controller`** module step-by-
 ### **Scenario Setup**
 
 We’ll assume the following:
+
 1. **Initial State**: The system starts with `NS1_GREEN` (North-South Lane 1 green light).
 2. **Sensor Inputs**:
    - `raw_s1[0]` (car at NS1 start): Active.
@@ -56,12 +57,14 @@ We’ll assume the following:
 ### **Step-by-Step Trace**
 
 #### **1. Initialization**
+
 - **Reset (`rst = 1`)**:
   - All modules reset their internal states.
   - FSM starts at `NS1_GREEN` (`light_signal = 4'b0001`).
   - Timer is idle (`start_timer = 0`, `yellow_mode = 0`).
 
 #### **2. FSM in `NS1_GREEN`**
+
 - **Inputs**:
   - `raw_s1[0] = 1` (car detected at NS1 start).
   - `raw_s5[0] = 0` (no congestion at NS1).
@@ -78,6 +81,7 @@ We’ll assume the following:
   - `NS2_light, EW1_light, EW2_light = RED`.
 
 #### **3. Timer Expiration in `NS1_GREEN`**
+
 - After 20 clock cycles, `timer_expired = 1`.
 
 - **FSM Transition**:
@@ -93,6 +97,7 @@ We’ll assume the following:
   - Timer starts for 5 clock cycles.
 
 #### **4. Timer Expiration in `NS1_YELLOW`**
+
 - After 5 clock cycles, `timer_expired = 1`.
 
 - **FSM Transition**:
@@ -109,6 +114,7 @@ We’ll assume the following:
   - Timer starts for 20 clock cycles.
 
 #### **5. Congestion in `NS2_GREEN`**
+
 - During `NS2_GREEN`:
   - `raw_s1[1] = 1` (car detected at NS2 start).
   - `raw_s5[1] = 1` (congestion detected at NS2).
@@ -122,6 +128,7 @@ We’ll assume the following:
   - Timer runs for 30 clock cycles instead of 20.
 
 #### **6. Timer Expiration in `NS2_GREEN`**
+
 - After 30 clock cycles, `timer_expired = 1`.
 
 - **FSM Transition**:
@@ -137,6 +144,7 @@ We’ll assume the following:
   - Timer starts for 5 clock cycles.
 
 #### **7. Timer Expiration in `NS2_YELLOW`**
+
 - After 5 clock cycles, `timer_expired = 1`.
 
 - **FSM Transition**:
@@ -205,6 +213,7 @@ The **`sensor_input_handler`** module is responsible for debouncing raw sensor i
 ### **Numerical Example**
 
 #### **Setup**
+
 - `DEBOUNCE_TIME = 4` (signal must remain stable for 4 clock cycles).
 - `raw_sensor`: Represents the noisy sensor input.
 - `sync`: Holds synchronized samples of the input.
@@ -283,5 +292,6 @@ For simplicity, we'll trace the debouncing process for one sensor input (`raw_se
 ### **When to Use**
 
 This module is ideal for:
+
 - Physical sensors (e.g., vehicle detectors, push-buttons) where signal noise or instability might cause erratic behavior.
 - Scenarios requiring validated, noise-free sensor data for reliable system operation.

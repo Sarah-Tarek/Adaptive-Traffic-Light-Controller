@@ -1,0 +1,86 @@
+# Ignore OS generated files
+.DS_Store
+Thumbs.db
+
+# Ignore build and output directories
+/build/
+/output/
+/bin/
+/obj/
+/log/
+
+# Ignore simulation files
+*.vcd
+*.wlf
+*.log
+*.out
+*.jou
+*.xsim
+*.wave
+
+# Ignore synthesis tool files
+*.bit
+*.rpt
+*.tcl
+*.dcp
+*.xpr
+*.xdc
+*.ngc
+*.ncd
+*.ucf
+*.prj
+*.svf
+
+# Ignore temporary and editor backup files
+*.bak
+*.tmp
+*.swp
+*.swo
+*~
+# Ignore editor-specific files
+.idea/
+*.iml
+
+# Ignore VSCode settings and extensions
+.vscode/
+.vscode/settings.json
+.vscode/launch.json
+.vscode/tasks.json
+.vscode/extensions.json
+
+# Ignore Python virtual environment if any scripts are used
+/venv/
+/__pycache__/
+*.pyc
+*.pyo
+
+# Ignore FPGA board-related cache files
+.cache/
+*.ip_user_files/
+*.runs/
+*.sim/
+*.sysdef
+*.xpr
+
+# Ignore user-specific configuration files
+*.user
+*.log
+
+# Ignore waveform and dump files
+*.lxt
+*.lxt2
+*.fst
+*.ghw
+
+# Ignore compiled binaries for any auxiliary tools
+*.exe
+*.dll
+*.so
+*.o
+*.a
+*.d
+
+# Exclude specific Verilog/SystemVerilog source files from being ignored
+!*.v
+!*.sv
+!*.vh

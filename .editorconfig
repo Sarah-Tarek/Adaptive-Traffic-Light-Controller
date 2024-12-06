@@ -1,0 +1,29 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# Root EditorConfig file for the project
+root = true
+
+# General settings for all files
+[*]
+charset = utf-8            # Encoding for all files
+end_of_line = lf           # Unix-style line endings
+insert_final_newline = true # Ensure files end with a newline
+trim_trailing_whitespace = true # Remove trailing whitespace on save
+
+# Settings for Verilog/SystemVerilog files
+[*.v, *.sv]
+indent_style = space        # Use spaces for indentation
+indent_size = 4             # Indent size of 4 spaces
+max_line_length = 120       # Limit lines to 120 characters
+
+# Settings for configuration files
+[*.editorconfig, *.ini, *.cfg, *.yaml, *.yml]
+indent_style = space
+indent_size = 2
+
+# Settings for Markdown files (documentation)
+[*.md]
+trim_trailing_whitespace = false  # Allow trailing whitespace in Markdown (e.g., for line breaks)
+max_line_length = 80              # Limit lines to 80 characters for better readability
+indent_style = space
+indent_size = 2
