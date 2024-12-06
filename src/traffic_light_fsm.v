@@ -1,8 +1,8 @@
 module traffic_light_fsm (
     input wire clk,                 // System clock
     input wire rst,                 // Reset signal
-    input wire [1:0] S1,            // Start of lane sensors
-    input wire [1:0] S5,            // Congestion sensors
+    input wire [3:0] S1,            // Start sensors for all 4 lanes
+    input wire [3:0] S5,            // Congestion sensors for all 4 lanes
     output reg [3:0] light_signal   // FSM output for traffic light control
 );
 
@@ -62,9 +62,9 @@ module traffic_light_fsm (
 
             // East-West Lane 1
             EW1_GREEN: begin
-                if (S1[0] == 1'b0)  // No cars at EW1, skip to EW2
+                if (S1[2] == 1'b0)  // No cars at EW1, skip to EW2
                     next_state = EW2_GREEN;
-                else if (S5[0] == 1'b1)  // Extend GREEN if congestion detected
+                else if (S5[2] == 1'b1)  // Extend GREEN if congestion detected
                     next_state = EW1_GREEN;
                 else
                     next_state = EW1_YELLOW;
@@ -75,9 +75,9 @@ module traffic_light_fsm (
 
             // East-West Lane 2
             EW2_GREEN: begin
-                if (S1[1] == 1'b0)  // No cars at EW2, skip to NS1
+                if (S1[3] == 1'b0)  // No cars at EW2, skip to NS1
                     next_state = NS1_GREEN;
-                else if (S5[1] == 1'b1)  // Extend GREEN if congestion detected
+                else if (S5[3] == 1'b1)  // Extend GREEN if congestion detected
                     next_state = EW2_GREEN;
                 else
                     next_state = EW2_YELLOW;
