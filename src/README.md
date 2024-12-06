@@ -261,6 +261,46 @@ For simplicity, we will trace one sensor (`raw_sensor[0]`).
 
 ---
 
+### **Full Input Signal Sequence for All 8 Sensors**
+
+#### **Signal Setup**
+- Initial state: `raw_sensor[7:0] = 00000000`.
+- Noise and stability patterns vary across all sensors.
+
+| Clock Cycle | `raw_sensor[7:0]`       | `sync[7:0][1:0]`        | `counter[7:0]`                 | `debounced_sensor[7:0]` | **Notes**                                     |
+|-------------|-------------------------|--------------------------|---------------------------------|-------------------------|-----------------------------------------------|
+| 0           | `00000000`             | `00 00 00 00 00 00 00 00`| `0 0 0 0 0 0 0 0`               | `00000000`             | Reset state.                                  |
+| 1           | `10011001`             | `01 01 00 01 00 00 01 10`| `0 0 0 0 0 0 0 0`               | `00000000`             | Sensors 0, 3, 7 change; counters reset.      |
+| 2           | `10011001`             | `11 11 00 11 00 00 11 11`| `1 1 0 1 0 0 1 1`               | `00000000`             | Sensors 0, 3, 7 stabilizing; counters increment. |
+| 3           | `10011001`             | `11 11 00 11 00 00 11 11`| `2 2 0 2 0 0 2 2`               | `00000000`             | Counters continue to increment.              |
+| 4           | `10011001`             | `11 11 00 11 00 00 11 11`| `3 3 0 3 0 0 3 3`               | `00000000`             | Sensors 0, 3, 7 nearing debounce threshold.  |
+| 5           | `10011001`             | `11 11 00 11 00 00 11 11`| `4 4 0 4 0 0 4 4`               | `10001001`             | Counters for sensors 0, 3, 7 reach `DEBOUNCE_TIME`; outputs update. |
+| 6           | `10001001`             | `11 10 00 11 00 00 11 11`| `4 0 0 4 0 0 4 4`               | `10001001`             | Sensor 1 changes; counter resets.            |
+| 7           | `10001001`             | `11 11 00 11 00 00 11 11`| `4 1 0 4 0 0 4 4`               | `10001001`             | Sensor 1 stabilizing; counter increments.    |
+| 8           | `10001101`             | `11 11 11 11 00 00 11 11`| `4 2 1 4 0 0 4 4`               | `10001001`             | Sensors 2 and 4 stabilizing.                 |
+| 9           | `10001101`             | `11 11 11 11 00 00 11 11`| `4 3 2 4 0 0 4 4`               | `10001001`             | Counters for sensors 2 and 4 nearing threshold. |
+| 10          | `10001101`             | `11 11 11 11 00 00 11 11`| `4 4 3 4 0 0 4 4`               | `11101101`             | Sensors 1, 2, 4 counters reach threshold; outputs update. |
+
+---
+
+### **Step-by-Step Full Analysis**
+
+#### **Clock 0:**
+- All `raw_sensor` inputs are `0`.
+- All counters and synchronizers are reset.
+
+#### **Clock 1–5:**
+- `raw_sensor[0]`, `raw_sensor[3]`, and `raw_sensor[7]` stabilize at `1`.
+- Counters for these sensors increment each clock cycle until reaching `DEBOUNCE_TIME`.
+- At `clock 5`, their `debounced_sensor` outputs update to `1`.
+
+#### **Clock 6–10:**
+- `raw_sensor[1]` stabilizes next, followed by `raw_sensor[2]` and `raw_sensor[4]`.
+- Each sensor’s counter increments until reaching `DEBOUNCE_TIME`.
+- At `clock 10`, their `debounced_sensor` outputs update to `1`.
+
+---
+
 ### **Why This Design Works**
 
 1. **Noise Immunity:**
