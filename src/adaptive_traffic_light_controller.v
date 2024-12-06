@@ -22,13 +22,15 @@ module adaptive_traffic_light_controller (
     genvar i;
     generate
         for (i = 0; i < 4; i = i + 1) begin : sensor_debounce
+            // For S1 Sensors
             sensor_input_handler s1_handler (
                 .clk(clk),
                 .rst(rst),
                 .raw_sensor(raw_s1[i]),
                 .debounced_sensor(debounced_s1[i])
             );
-
+            
+            // For S5 Sensors
             sensor_input_handler s5_handler (
                 .clk(clk),
                 .rst(rst),
