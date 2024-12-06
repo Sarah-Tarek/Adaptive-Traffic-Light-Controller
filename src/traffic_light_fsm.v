@@ -9,18 +9,18 @@ module traffic_light_fsm (
 );
 
     // State encoding
-    localparam NS1_RED    = 4'b0000,
-               NS1_GREEN  = 4'b0001,
-               NS1_YELLOW = 4'b0010,
-               NS2_RED    = 4'b0011,
-               NS2_GREEN  = 4'b0100,
-               NS2_YELLOW = 4'b0101,
-               EW1_RED    = 4'b0110,
-               EW1_GREEN  = 4'b0111,
-               EW1_YELLOW = 4'b1000,
-               EW2_RED    = 4'b1001,
-               EW2_GREEN  = 4'b1010,
-               EW2_YELLOW = 4'b1011;
+    localparam NS1_RED    = 4'b0000,  
+               NS1_GREEN  = 4'b0001,  
+               NS1_YELLOW = 4'b0011,  
+               NS2_RED    = 4'b0010,  
+               NS2_GREEN  = 4'b0110,  
+               NS2_YELLOW = 4'b0111,  
+               EW1_RED    = 4'b0101,  
+               EW1_GREEN  = 4'b0100,  
+               EW1_YELLOW = 4'b1100,
+               EW2_RED    = 4'b1101,
+               EW2_GREEN  = 4'b1111,
+               EW2_YELLOW = 4'b1110;
 
     // State transition logic
     always @(posedge clk or posedge rst) begin
