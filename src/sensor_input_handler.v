@@ -1,37 +1,32 @@
 module sensor_input_handler (
     input wire clk,
     input wire rst,
-    input wire [3:0] raw_sensor,       // 4 raw sensor inputs
-    output reg [3:0] debounced_sensor  // 4 debounced outputs
+    input wire raw_sensor,        // Single raw sensor input
+    output reg debounced_sensor   // Single debounced output
 );
 
     parameter DEBOUNCE_TIME = 4;  // Number of clock cycles for stable input
 
-    reg [1:0] sync[3:0];          // Synchronizers for each sensor
-    reg [2:0] counter[3:0];       // Counters for each sensor
+    reg [1:0] sync;               // Synchronizer
+    reg [2:0] counter;            // Counter
 
-    integer i;
     always @(posedge clk or posedge rst) begin
         if (rst) begin
-            for (i = 0; i < 4; i = i + 1) begin
-                sync[i] <= 2'b00;
-                counter[i] <= 0;
-                debounced_sensor[i] <= 0;
-            end
+            sync <= 2'b00;
+            counter <= 0;
+            debounced_sensor <= 0;
         end else begin
-            for (i = 0; i < 4; i = i + 1) begin
-                // Synchronize raw input
-                sync[i] <= {sync[i][0], raw_sensor[i]};
-                
-                // Debounce logic
-                if (sync[i][1] == sync[i][0]) begin
-                    if (counter[i] < DEBOUNCE_TIME)
-                        counter[i] <= counter[i] + 1;
-                    else
-                        debounced_sensor[i] <= sync[i][1];  // Update after stable period
-                end else begin
-                    counter[i] <= 0;  // Reset counter on input change
-                end
+            // Synchronize raw input
+            sync <= {sync[0], raw_sensor};
+            
+            // Debounce logic
+            if (sync[1] == sync[0]) begin
+                if (counter < DEBOUNCE_TIME)
+                    counter <= counter + 1;
+                else
+                    debounced_sensor <= sync[1];  // Update after stable period
+            end else begin
+                counter <= 0;  // Reset counter on input change
             end
         end
     end
