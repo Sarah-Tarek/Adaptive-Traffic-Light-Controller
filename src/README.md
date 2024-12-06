@@ -4,6 +4,30 @@ An adaptive traffic light controller designed to dynamically manage traffic flow
 
 ---
 
+## **Table of Contents**
+
+1. [Introduction](#introduction)  
+2. [Scenario Walkthrough](#scenario-walkthrough)  
+   - [Scenario Setup](#scenario-setup)  
+   - [Step-by-Step Trace](#step-by-step-trace)  
+   - [Summary of Key Signals](#summary-of-key-signals)  
+   - [How Each Module Works Together](#how-each-module-works-together)  
+3. [Sensor Input Handler Explained](#sensor-input-handler-explained)  
+   - [Module Components](#module-components)  
+   - [How It Works](#how-it-works)  
+   - [Numerical Example](#numerical-example)  
+   - [Step-by-Step Explanation](#step-by-step-explanation)  
+   - [Why This Design Works](#why-this-design-works)  
+   - [When to Use](#when-to-use)
+
+---
+
+## **Introduction**
+
+The Adaptive Traffic Light Controller is designed to optimize traffic flow at a four-way intersection. It dynamically adjusts green light durations based on lane congestion and ensures smooth transitions between lanes using a robust FSM.
+
+---
+
 ## **Scenario Walkthrough**
 
 Let’s walk through the **`adaptive_traffic_light_controller`** module step-by-step, with a **trace of signals and behavior** based on a real-world scenario.
@@ -156,3 +180,118 @@ We’ll assume the following:
 
 4. **Traffic Light Driver**:
    - Decodes the FSM’s `light_signal` to control the actual traffic lights.
+
+---
+
+## **Sensor Input Handler Explained**
+
+Let’s break down the **`sensor_input_handler`** module and explain its functionality step-by-step with a numerical example. This module is designed to **debounce** a noisy input signal, ensuring stable transitions without glitches caused by noise.
+
+---
+
+### **Module Components**
+
+1. **Parameters:**
+   - `DEBOUNCE_TIME`: Specifies the number of clock cycles the input signal must remain stable before it is considered valid. (In this case, `4` clock cycles.)
+
+2. **Registers:**
+   - `sync [1:0]`: A 2-bit register used to synchronize the raw input (`raw_sensor`) with the clock signal. It helps avoid metastability by double sampling.
+   - `counter [2:0]`: Counts how many consecutive clock cycles the input signal remains stable.
+   - `debounced_sensor`: The final output, updated only after the input signal is stable for `DEBOUNCE_TIME` clock cycles.
+
+---
+
+### **How It Works**
+
+1. **Synchronization (`sync`):**
+   - The raw input signal (`raw_sensor`) is sampled over two clock cycles and stored in `sync`.
+   - `sync[1]` is the synchronized version of the input.
+
+2. **Stability Check:**
+   - If the last two samples in `sync` are the same (`sync[1] == sync[0]`), the counter increments. This indicates the signal has remained stable.
+   - If the samples differ (`sync[1] != sync[0]`), the counter resets, as the signal is unstable.
+
+3. **Debouncing Logic:**
+   - If the counter reaches `DEBOUNCE_TIME`, the signal is considered stable, and `debounced_sensor` is updated with the value of `sync[1]`.
+
+4. **Output (`debounced_sensor`):**
+   - `debounced_sensor` reflects the stable value of the input only after it has remained stable for `DEBOUNCE_TIME` clock cycles.
+
+---
+
+### **Numerical Example**
+
+#### **Setup**
+- `DEBOUNCE_TIME = 4` (signal must remain stable for 4 clock cycles).
+- `raw_sensor`: The noisy input signal.
+- `sync[1:0]`: Synchronizes the input.
+- `counter`: Tracks stability duration.
+- `debounced_sensor`: Final debounced output.
+
+#### **Input Signal Sequence**
+| Clock Cycle | `raw_sensor` | `sync[1:0]` | `counter` | `debounced_sensor` | Notes                                |
+|-------------|--------------|-------------|-----------|---------------------|--------------------------------------|
+| 0           | 0            | 00          | 0         | 0                   | Reset state.                         |
+| 1           | 1            | 01          | 0         | 0                   | Signal changes; counter resets.      |
+| 2           | 1            | 11          | 1         | 0                   | Signal stable; counter increments.   |
+| 3           | 1            | 11          | 2         | 0                   | Signal stable; counter increments.   |
+| 4           | 1            | 11          | 3         | 0                   | Signal stable; counter increments.   |
+| 5           | 1            | 11          | 4         | 1                   | Counter reaches `DEBOUNCE_TIME`; output updates. |
+| 6           | 1            | 11          | 4         | 1                   | Signal remains stable.               |
+| 7           | 0            | 10          | 0         | 1                   | Signal changes; counter resets.      |
+| 8           | 0            | 00          | 1         | 1                   | Signal stable; counter increments.   |
+| 9           | 0            | 00          | 2         | 1                   | Signal stable; counter increments.   |
+| 10          | 0            | 00          | 3         | 1                   | Signal stable; counter increments.   |
+| 11          | 0            | 00          | 4         | 0                   | Counter reaches `DEBOUNCE_TIME`; output updates. |
+
+---
+
+### **Step-by-Step Explanation**
+
+1. **Clock 0**: 
+   - `raw_sensor = 0`.
+   - `sync` is initialized to `00` (both bits are 0).
+   - `counter` is 0, and `debounced_sensor` is 0.
+
+2. **Clock 1**:
+   - `raw_sensor` changes to 1.
+   - `sync` becomes `01` (first sample captures 1).
+   - Since `sync[1] != sync[0]`, the signal is unstable, so `counter` resets to 0.
+
+3. **Clock 2–5**:
+   - `raw_sensor` remains 1.
+   - `sync` becomes `11` (signal stabilized across both samples).
+   - The `counter` increments from 1 to 4.
+   - At clock 5, `counter == DEBOUNCE_TIME`, so `debounced_sensor` updates to 1.
+
+4. **Clock 7**:
+   - `raw_sensor` changes back to 0.
+   - `sync` becomes `10` (unstable signal detected).
+   - The `counter` resets to 0.
+
+5. **Clock 8–11**:
+   - `raw_sensor` remains 0.
+   - `sync` becomes `00` (signal stabilized across both samples).
+   - The `counter` increments from 1 to 4.
+   - At clock 11, `counter == DEBOUNCE_TIME`, so `debounced_sensor` updates to 0.
+
+---
+
+### **Why This Design Works**
+
+1. **Noise Immunity**:
+   - Short glitches (e.g., single-cycle noise) are ignored because the counter resets on unstable signals.
+
+2. **Flexible Timing**:
+   - The parameter `DEBOUNCE_TIME` allows you to adjust the stability duration depending on the expected noise characteristics.
+
+3. **Synchronization**:
+   - The 2-stage `sync` register ensures the input is synchronized to the clock, preventing metastability issues.
+
+---
+
+### **When to Use**
+
+This module is ideal for:
+- Physical hardware inputs (e.g., buttons, switches, sensors) where noise or bouncing can cause erratic behavior.
+- Signals that require validation over a specific period of stability.
