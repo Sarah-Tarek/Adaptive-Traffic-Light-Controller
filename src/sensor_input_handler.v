@@ -1,6 +1,6 @@
 module sensor_input_handler (
-    input wire clk,
-    input wire rst,
+    input wire clk,               // System clock
+    input wire rst,               // Reset signal
     input wire raw_sensor,        // Single raw sensor input
     output reg debounced_sensor   // Single debounced output
 );
@@ -18,7 +18,7 @@ module sensor_input_handler (
         end else begin
             // Synchronize raw input
             sync <= {sync[0], raw_sensor};
-            
+
             // Debounce logic
             if (sync[1] == sync[0]) begin
                 if (counter < DEBOUNCE_TIME)
