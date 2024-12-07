@@ -1,20 +1,20 @@
 module FSM_tb();
   reg clk_tb;
   reg rst_tb;
-  reg NS1_S1_tb;
-  reg NS2_S1_tb;
-  reg EW1_S1_tb;
-  reg EW2_S1_tb;
-  reg NS1_S5_tb;
-  reg NS2_S5_tb;
-  reg EW1_S5_tb;
-  reg EW2_S5_tb;
+  reg NS_S1_tb;
+  reg SN_S1_tb;
+  reg EW_S1_tb;
+  reg WE_S1_tb;
+  reg NS_S5_tb;
+  reg SN_S5_tb;
+  reg EW_S5_tb;
+  reg WE_S5_tb;
   wire [3:0] state_tb;
   wire [3:0] next_state_tb;
   wire [3:0] light_signal_tb;
   
 //instantiate DUT  
-  traffic_light_fsm DUT(.clk(clk_tb) , .rst(rst_tb) , .NS1_S1(NS1_S1_tb) , .NS2_S1(NS2_S1_tb) ,.EW1_S1(EW1_S1_tb) ,.EW2_S1(EW2_S1_tb) , .NS1_S5(NS1_S5_tb) , .NS2_S5(NS2_S5_tb) ,.EW1_S5(EW1_S5_tb) ,.EW2_S5(EW2_S5_tb) , .state(state_tb) , .next_state(next_state_tb) , .light_signal(light_signal_tb));
+  traffic_light_fsm DUT(.clk(clk_tb) , .rst(rst_tb) , .NS_S1(NS_S1_tb) , .SN_S1(SN_S1_tb) ,.EW_S1(EW_S1_tb) ,.WE_S1(WE_S1_tb) , .NS_S5(NS_S5_tb) , .SN_S5(SN_S5_tb) ,.EW_S5(EW_S5_tb) ,.WE_S5(WE_S5_tb) , .state(state_tb) , .next_state(next_state_tb) , .light_signal(light_signal_tb));
   
   //clk generator
   initial begin
@@ -32,60 +32,60 @@ module FSM_tb();
   
   //test cases: testing every transition
   initial begin
-  // NS1_RED --> NS2_RED --> EW1_RED --> EW2_RED --> NS1_RED
-  NS1_S1_tb <= 1'b0;
-  NS2_S1_tb <= 1'b0;
-  EW1_S1_tb <= 1'b0;
-  EW2_S1_tb <= 1'b0;
+  // NS_RED --> SN_RED --> EW_RED --> WE_RED --> NS_RED
+  NS_S1_tb <= 1'b0;
+  SN_S1_tb <= 1'b0;
+  EW_S1_tb <= 1'b0;
+  WE_S1_tb <= 1'b0;
     
-  NS1_S5_tb <= 1'b0;
-  NS2_S5_tb <= 1'b0;
-  EW1_S5_tb <= 1'b0;
-  EW2_S5_tb <= 1'b0;  
+  NS_S5_tb <= 1'b0;
+  SN_S5_tb <= 1'b0;
+  EW_S5_tb <= 1'b0;
+  WE_S5_tb <= 1'b0;  
   #42
-  //NS1  
-  //NS1_RED --> NS1_GREEN  
-  NS1_S1_tb <= 1'b1;
+  //NS  
+  //NS_RED --> NS_GREEN  
+  NS_S1_tb <= 1'b1;
   #8
-  //NS1_GREEN --> NS1_GREEN_2
-  NS1_S5_tb <= 1'b1;
+  //NS_GREEN --> NS_GREEN_2
+  NS_S5_tb <= 1'b1;
   #10
-  //NS1_GREEN_2 --> NS1_YELLOW
+  //NS_GREEN_2 --> NS_YELLOW
   #10
-  //NS1_YELLOW --> NS2_RED
+  //NS_YELLOW --> SN_RED
   #10
-  //NS2 
-  //NS2_RED --> NS2_GREEN
-  NS2_S1_tb <= 1'b1; 
+  //SN 
+  //SN_RED --> SN_GREEN
+  SN_S1_tb <= 1'b1; 
   #10
-  //NS2_GREEN --> NS2_GREEN_2
-  NS2_S5_tb <= 1'b1;
+  //SN_GREEN --> SN_GREEN_2
+  SN_S5_tb <= 1'b1;
   #10
-  //NS2_GREEN_2 --> NS2_YELLOW
+  //SN_GREEN_2 --> SN_YELLOW
   #10  
-  //NS2_YELLOW --> EW1_RED
+  //SN_YELLOW --> EW_RED
   #10
-  //EW1
-  //EW1_RED --> EW1_GREEN
-  EW1_S1_tb <= 1'b1; 
+  //EW
+  //EW_RED --> EW_GREEN
+  EW_S1_tb <= 1'b1; 
   #10
-  //EW1_GREEN --> EW1_GREEN_2
-  EW1_S5_tb <= 1'b1;
+  //EW_GREEN --> EW_GREEN_2
+  EW_S5_tb <= 1'b1;
   #10
-  //EW1_GREEN_2 --> EW1_YELLOW
+  //EW_GREEN_2 --> EW_YELLOW
   #10  
-  //EW1_YELLOW --> EW2_RED
+  //EW_YELLOW --> WE_RED
   #10
-   //EW2
-  //EW2_RED --> EW2_GREEN
-  EW2_S1_tb <= 1'b1; 
+   //WE
+  //WE_RED --> WE_GREEN
+  WE_S1_tb <= 1'b1; 
   #10
-  //EW2_GREEN --> EW2_GREEN_2
-  EW2_S5_tb <= 1'b1;
+  //WE_GREEN --> WE_GREEN_2
+  WE_S5_tb <= 1'b1;
   #10
-  //EW2_GREEN_2 --> EW2_YELLOW
+  //WE_GREEN_2 --> WE_YELLOW
   #10  
-  //EW2_YELLOW --> NS1_RED
+  //WE_YELLOW --> NS_RED
   #20
   rst_tb <= 1'b1;
   #12
