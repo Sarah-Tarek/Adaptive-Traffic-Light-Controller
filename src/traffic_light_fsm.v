@@ -15,25 +15,25 @@ module traffic_light_fsm (
 );
 
     // State encoding
-    localparam NS1_RED            = 4'b0000, // RED for NS1
-               NS1_PRIMARY_GREEN  = 4'b0001, // Primary GREEN for NS1
-               NS1_EXTENDED_GREEN = 4'b0011, // Extended GREEN for NS1
-               NS1_YELLOW         = 4'b0010, // YELLOW for NS1
+    localparam NS1_RED            = 4'b0000,
+               NS1_PRIMARY_GREEN  = 4'b0001,
+               NS1_EXTENDED_GREEN = 4'b0011,
+               NS1_YELLOW         = 4'b0010,
 
-               NS2_RED            = 4'b0110, // RED for NS2
-               NS2_PRIMARY_GREEN  = 4'b0111, // Primary GREEN for NS2
-               NS2_EXTENDED_GREEN = 4'b0101, // Extended GREEN for NS2
-               NS2_YELLOW         = 4'b0100, // YELLOW for NS2
+               NS2_RED            = 4'b0110,
+               NS2_PRIMARY_GREEN  = 4'b0111,
+               NS2_EXTENDED_GREEN = 4'b0101,
+               NS2_YELLOW         = 4'b0100,
 
-               EW1_RED            = 4'b1100, // RED for EW1
-               EW1_PRIMARY_GREEN  = 4'b1101, // Primary GREEN for EW1
-               EW1_EXTENDED_GREEN = 4'b1111, // Extended GREEN for EW1
-               EW1_YELLOW         = 4'b1110, // YELLOW for EW1
+               EW1_RED            = 4'b1100,
+               EW1_PRIMARY_GREEN  = 4'b1101,
+               EW1_EXTENDED_GREEN = 4'b1111,
+               EW1_YELLOW         = 4'b1110,
 
-               EW2_RED            = 4'b1010, // RED for EW2
-               EW2_PRIMARY_GREEN  = 4'b1011, // Primary GREEN for EW2
-               EW2_EXTENDED_GREEN = 4'b1001, // Extended GREEN for EW2
-               EW2_YELLOW         = 4'b1000; // YELLOW for EW2
+               EW2_RED            = 4'b1010,
+               EW2_PRIMARY_GREEN  = 4'b1011,
+               EW2_EXTENDED_GREEN = 4'b1001,
+               EW2_YELLOW         = 4'b1000;
 
     // Sequential logic for state transitions
     always @(posedge clk or posedge rst) begin
