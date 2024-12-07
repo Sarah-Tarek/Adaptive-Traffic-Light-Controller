@@ -44,54 +44,53 @@ module FSM_tb();
   WE_S5_tb <= 1'b0;  
   #42
   //NS  
-  //NS_RED --> NS_GREEN  
+  //NS_RED --> NS_PRIMARY_GREEN  
   NS_S1_tb <= 1'b1;
   #8
-  //NS_GREEN --> NS_GREEN_2
+  //NS_PRIMARY_GREEN --> NS_EXTENDED_GREEN
   NS_S5_tb <= 1'b1;
   #10
-  //NS_GREEN_2 --> NS_YELLOW
+  //NS_EXTENDED_GREEN --> NS_YELLOW
   #10
   //NS_YELLOW --> SN_RED
   #10
   //SN 
-  //SN_RED --> SN_GREEN
+  //SN_RED --> SN_PRIMARY_GREEN
   SN_S1_tb <= 1'b1; 
   #10
-  //SN_GREEN --> SN_GREEN_2
+  //SN_PRIMARY_GREEN --> SN_EXTENDED_GREEN
   SN_S5_tb <= 1'b1;
   #10
-  //SN_GREEN_2 --> SN_YELLOW
+  //SN_EXTENDED_GREEN --> SN_YELLOW
   #10  
   //SN_YELLOW --> EW_RED
   #10
   //EW
-  //EW_RED --> EW_GREEN
+  //EW_RED --> EW_PRIMARY_GREEN
   EW_S1_tb <= 1'b1; 
   #10
-  //EW_GREEN --> EW_GREEN_2
+  //EW_PRIMARY_GREEN --> EW_EXTENDED_GREEN
   EW_S5_tb <= 1'b1;
   #10
-  //EW_GREEN_2 --> EW_YELLOW
+  //EW_EXTENDED_GREEN --> EW_YELLOW
   #10  
   //EW_YELLOW --> WE_RED
   #10
    //WE
-  //WE_RED --> WE_GREEN
+  //WE_RED --> WE_PRIMARY_GREEN
   WE_S1_tb <= 1'b1; 
   #10
-  //WE_GREEN --> WE_GREEN_2
+  //WE_PRIMARY_GREEN --> WE_EXTENDED_GREEN
   WE_S5_tb <= 1'b1;
   #10
-  //WE_GREEN_2 --> WE_YELLOW
+  //WE_EXTENDED_GREEN --> WE_YELLOW
   #10  
   //WE_YELLOW --> NS_RED
   #20
   rst_tb <= 1'b1;
   #12
   rst_tb <= 1'b0;
-  #30  
-    
+  #30      
   $finish ;    
   end
   
