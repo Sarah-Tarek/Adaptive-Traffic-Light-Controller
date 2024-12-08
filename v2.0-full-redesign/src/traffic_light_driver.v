@@ -1,10 +1,9 @@
 module traffic_light_driver (
-
   input wire [3:0] light_signal, // FSM output signal
-  output reg [1:0] NS_light,    // Traffic light signals for NS
-  output reg [1:0] SN_light,    // Traffic light signals for SN
-  output reg [1:0] EW_light,    // Traffic light signals for EW
-  output reg [1:0] WE_light     // Traffic light signals for WE
+  output reg [1:0] NS_light,     // Traffic light signals for NS
+  output reg [1:0] SN_light,     // Traffic light signals for SN
+  output reg [1:0] EW_light,     // Traffic light signals for EW
+  output reg [1:0] WE_light      // Traffic light signals for WE
 );
 
     // Traffic light states
@@ -22,9 +21,9 @@ module traffic_light_driver (
                     NS_light <= RED;
                     SN_light <= RED;
            		    EW_light <= RED;
-                    WE_light <= RED;  
-                end  
-                  
+                    WE_light <= RED;
+                end
+
                 // North-South Lane 1
                 4'b0001: begin
                     NS_light <= GREEN;
