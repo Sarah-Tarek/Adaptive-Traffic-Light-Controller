@@ -9,11 +9,11 @@ module adaptive_traffic_light_controller (
     input wire S5_SN,                    // Congestion sensor for North-South Lane 2
     input wire S5_EW,                    // Congestion sensor for East-West Lane 1
     input wire S5_WE,                    // Congestion sensor for East-West Lane 2
-    output reg [1:0] NS_light,           // Traffic light signals for North-South Lane 1
-    output reg [1:0] SN_light,           // Traffic light signals for North-South Lane 2
-    output reg [1:0] EW_light,           // Traffic light signals for East-West Lane 1
-    output reg [1:0] WE_light,           // Traffic light signals for East-West Lane 2
-    output reg [3:0] current_state       // Current state of the FSM
+    output wire [1:0] NS_light,           // Traffic light signals for North-South Lane 1
+    output wire [1:0] SN_light,           // Traffic light signals for North-South Lane 2
+    output wire [1:0] EW_light,           // Traffic light signals for East-West Lane 1
+    output wire [1:0] WE_light,           // Traffic light signals for East-West Lane 2
+    output wire [3:0] current_state       // Current state of the FSM
 );
 
     // Internal Signals
