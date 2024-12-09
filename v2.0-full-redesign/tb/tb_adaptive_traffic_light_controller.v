@@ -1,5 +1,4 @@
-`timescale 1ns/1ns
-module FSM_tb();
+module adaptive_traffic_light_controller_tb();
   reg clk_tb;
   reg rst_tb;
   reg S1_NS_tb;
