@@ -34,69 +34,89 @@ module adaptive_traffic_light_controller_tb();
   end
   
   //test cases: testing every transition and reset
+  //test case all s1 and s5 == 0
   initial begin
   S1_NS_tb <= 1'b0;
   S1_SN_tb <= 1'b0;
   S1_EW_tb <= 1'b0;
-  S1_WE_tb <= 1'b0;
-    
+  S1_WE_tb <= 1'b0;   
   S5_NS_tb <= 1'b0;
   S5_SN_tb <= 1'b0;
   S5_EW_tb <= 1'b0;
   S5_WE_tb <= 1'b0;  
-  #32
+  #20
+  //NS has cars all others no cars 
   S1_NS_tb <= 1'b1;
-  #8
-  S5_NS_tb <= 1'b1;
-  #80 //
-  S1_NS_tb <= 1'b0;
-  
-  S1_SN_tb <= 1'b0;
-  S1_EW_tb <= 1'b0;
-  S1_WE_tb <= 1'b0;
-    
-  S5_NS_tb <= 1'b0;
-  S5_SN_tb <= 1'b0;
-  S5_EW_tb <= 1'b0;
-  S5_WE_tb <= 1'b0;   
-  #20  
-  S1_SN_tb <= 1'b1; //
   #10
+  //NS has congestion  all others no cars
+  S5_NS_tb <= 1'b1;
+  #100
+  //NS no congestion  all others no cars
+  S5_NS_tb <= 1'b0;
+  #10
+  //SN has cars and NS has cars
+  S1_SN_tb <= 1'b1; 
+  #30
+  //SN has cogestion and NS have cars
   S5_SN_tb <= 1'b1;
+  #120
+  //SN no congestion and NS have cars
+  S5_SN_tb <= 1'b0;
   #10 
+  //EW has cars and SN , NS have cars
   S1_EW_tb <= 1'b1; 
   #10
+  //EW has cogestion and SN , NS have cars
   S5_EW_tb <= 1'b1;
-  #10
+  #140
+  //EW no congestion and SN , NS have cars
+  S5_EW_tb <= 1'b0;
   #10  
-  #10
+  //WE , EW , SN , NS have cars
   S1_WE_tb <= 1'b1; 
   #10
+  //WE has cogestion  and EW , SN , NS have cars
   S5_WE_tb <= 1'b1;
-  #10
-  #10  
-  #20
-  /*rst_tb <= 1'b1;
-  #12
-  rst_tb <= 1'b0;*/
-  #20
-  S5_NS_tb <= 1'b0;
-  #10
-  S5_SN_tb <= 1'b0;
-  #10
-  S5_EW_tb <= 1'b0;
-  #10
+  #160
+  //WE no congestion  and EW , SN , NS have cars 
   S5_WE_tb <= 1'b0;
+  #50
+  //WE has no cars and EW, NS , SN have cars
+  S1_WE_tb <= 1'b0;
+  #100
+  //NS has no cars and EW , SN have cars
+  S1_NS_tb <= 1'b0;
+  #100
+  //SN no cars and EW has cars  
+  S1_SN_tb <= 1'b0;
+  #100  
+  //ALL no cars
+  S1_EW_tb <= 1'b0;
+  #50
+  //WE has cars  
+  S1_WE_tb <= 1'b1;
+  #100  
+  //SN no cars and EW has cars  
+  S1_SN_tb <= 1'b0;
+  #120
+  //NO cars at all traffic
+  S1_WE_tb <= 1'b0;
+  #100
+  //SN has traffic and NS has cars
+  S1_SN_tb <= 1'b1;
   #10
-  S1_SN_tb <= 1'b0;  
+  S1_NS_tb <= 1'b1;
   #10  
-    
+  S5_SN_tb <= 1'b1;  
+
+  #50
+  S5_SN_tb <= 1'b0;
+  #20
+  S1_SN_tb <= 1'b0;
+  #30
+  S1_NS_tb <= 1'b0;  
+  #20
   $finish ;    
   end
-  
-  //
-  /*always@(posedge clk_tb)begin
-    $display("state = %0b , next state = %0b" , state_tb , DUT.FSM.next_state);
-  end */
-  
+
   endmodule
