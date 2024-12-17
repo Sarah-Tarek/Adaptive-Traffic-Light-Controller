@@ -12,6 +12,7 @@ module timer (
 
     reg [5:0] counter;        // Countdown timer (6-bit for up to 63 clock cycles)
     reg [5:0] load_value;     // Value to load into counter
+    reg [3:0] prev_state;     // Previous state for detecting state changes
 
     // Determine counter value based on state
     always @(*) begin
@@ -24,17 +25,23 @@ module timer (
         endcase
     end
 
-    // Timer countdown logic
+    // Timer countdown logic with state change detection
     always @(posedge clk or posedge rst) begin
         if (rst) begin
-            counter <= 0;
+            counter <= load_value; // Reset the counter to the load value
             expired <= 0;
+            prev_state <= state;   // Initialize previous state
         end else begin
-            if (counter == 0) begin
-                expired <= 1;        // Signal timer expiration
-                counter <= load_value; // Reload the counter
+            if (state != prev_state) begin
+                // On state change, reload the counter
+                counter <= load_value;
+                expired <= 0;
+                prev_state <= state; // Update previous state
+            end else if (counter == 0) begin
+                expired <= 1;           // Signal timer expiration
+                counter <= load_value;  // Reload the counter
             end else begin
-                expired <= 0;        // Clear expired signal
+                expired <= 0;           // Clear expired signal
                 counter <= counter - 1; // Decrement counter
             end
         end
